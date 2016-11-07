@@ -1,11 +1,11 @@
 require 'test_helper'
 
-class AuthTest < Minitest::Test
-  def test_that_it_has_a_version_number
+class AuthTest < Auth::TestCase
+  test 'version number' do
     refute_nil ::Auth::VERSION
   end
 
-  def test_it_does_something_useful
+  test 'it does something useful' do
     assert false
   end
 end
