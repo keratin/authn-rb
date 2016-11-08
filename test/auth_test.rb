@@ -55,8 +55,8 @@ class AuthTest < Auth::TestCase
 
   private def claims
     {
-      iss: Auth::CONFIG[:issuer],
-      aud: Auth::CONFIG[:audience],
+      iss: Auth.config.issuer,
+      aud: Auth.config.audience,
       sub: rand(999),
       iat: (Time.now - 5).to_i,
       exp: (Time.now + 150).to_i

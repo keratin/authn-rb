@@ -18,7 +18,7 @@ module Auth
     end
 
     def token_for_us?
-      jwt[:aud] == Auth::CONFIG[:audience]
+      jwt[:aud] == Auth.config.audience
     end
 
     def token_is_fresh?

@@ -8,8 +8,8 @@ module Auth
       # a factory for JWT id_tokens
       private def id_token_for(subject)
         JSON::JWT.new(
-          iss: Auth::CONFIG[:issuer],
-          aud: Auth::CONFIG[:audience],
+          iss: Auth.config.issuer,
+          aud: Auth.config.audience,
           sub: subject,
           iat: 10.seconds.ago,
           exp: 1.hour.from_now
@@ -25,11 +25,11 @@ module Auth
 
       # stubs the endpoints necessary to validate a signed JWT
       private def stub_auth_server
-        stub_request(:get, "#{Auth::CONFIG[:issuer]}/configuration").to_return(
+        stub_request(:get, "#{Auth.config.issuer}#{Auth.config.configuration_path}").to_return(
           status: 200,
-          body: {'jwks_uri' => "#{Auth::CONFIG[:issuer]}/jwks"}.to_json
+          body: {'jwks_uri' => "#{Auth.config.issuer}/jwks"}.to_json
         )
-        stub_request(:get, "#{Auth::CONFIG[:issuer]}/jwks").to_return(
+        stub_request(:get, "#{Auth.config.issuer}/jwks").to_return(
           status: 200,
           body: {
             keys: [

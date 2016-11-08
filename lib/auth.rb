@@ -4,11 +4,25 @@ require_relative 'auth/issuer'
 
 require 'json/jwt'
 module Auth
-  CONFIG = {
-    issuer: "https://issuer.tech",
-    configuration_path: "/configuration",
-    audience: "audience.tech",
-  }
+  class Config
+    # the domain (host) of the main application.
+    # e.g. "audience.tech"
+    attr_accessor :audience
+
+    # the path where we can fetch configuration from our issuer.
+    # e.g. "/configuration"
+    attr_accessor :configuration_path
+
+    # the base url of the service handling authentication
+    # e.g. "https://issuer.tech"
+    attr_accessor :issuer
+  end
+
+  def self.config
+    @config ||= Config.new.tap do |config|
+      config.configuration_path = '/configuration'
+    end
+  end
 
   class << self
     # safely fetches a subject from the id token after checking relevant claims and
