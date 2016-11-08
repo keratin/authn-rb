@@ -14,6 +14,12 @@ class Auth::TestCase < Minitest::Test
 
   def self.test(name, &block)
     method_name = ['test', @testing, name].compact.join(' ').gsub(' ', '_')
-    define_method method_name, &block
+    if block_given?
+      define_method method_name, &block
+    else
+      define_method method_name do
+        skip "not implemented"
+      end
+    end
   end
 end
