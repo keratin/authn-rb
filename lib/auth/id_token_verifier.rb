@@ -1,7 +1,8 @@
 module Auth
   class IDTokenVerifier
-    def initialize(str)
+    def initialize(str, keychain)
       @id_token = str
+      @keychain = keychain
       @time = Time.now.to_i
     end
 
@@ -30,7 +31,7 @@ module Auth
     end
 
     def token_intact?
-      jwt.verify!(Auth.issuer_signing_key(jwt['iss']))
+      jwt.verify!(@keychain.fetch(jwt['iss']))
     rescue JSON::JWT::VerificationFailed, JSON::JWT::UnexpectedAlgorithm
       false
     end

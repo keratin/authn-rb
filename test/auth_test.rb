@@ -1,14 +1,25 @@
-require 'test_helper'
+require_relative 'test_helper'
 require 'auth/testing'
 
 class AuthTest < Auth::TestCase
   include Auth::Test::Helpers
+
+  def teardown
+    super
+    Auth.keychain.send(:clear)
+  end
 
   test 'version number' do
     refute_nil ::Auth::VERSION
   end
 
   testing '#subject_from' do
+    test "with valid JWT" do
+      stub_auth_server
+      jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
+      assert_equal jwt['sub'], Auth.subject_from(jwt.to_s)
+    end
+
     test "with invalid JWT" do
       assert_equal nil, Auth.subject_from(nil)
       assert_equal nil, Auth.subject_from('')
@@ -35,6 +46,22 @@ class AuthTest < Auth::TestCase
       jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
       jwt['sub'] = 999999
       assert_equal nil, Auth.subject_from(jwt.to_s)
+    end
+
+    test "with cached issuer keys" do
+      Auth.keychain.send(:store, Auth.config.issuer, Time.now + 3600, jws_keypair.to_jwk)
+
+      jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
+      assert_equal jwt['sub'], Auth.subject_from(jwt.to_s)
+    end
+
+    test "with expired issuer keys" do
+      old_key = OpenSSL::PKey::RSA.new(512)
+      Auth.keychain.send(:store, Auth.config.issuer, Time.now - 3600, old_key.to_jwk)
+
+      stub_auth_server
+      jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
+      assert_equal jwt['sub'], Auth.subject_from(jwt.to_s)
     end
 
     test "with valid JWT for different audience" do
