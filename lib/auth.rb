@@ -1,8 +1,9 @@
 require_relative 'auth/version'
 require_relative 'auth/engine' if defined?(Rails)
 require_relative 'auth/id_token_verifier'
-require_relative 'auth/keychain'
+require_relative 'auth/issuer'
 
+require 'lru_redux'
 require 'json/jwt'
 
 module Auth
@@ -33,7 +34,7 @@ module Auth
   end
 
   def self.keychain
-    @keychain ||= Auth::Keychain.new(ttl: config.keychain_ttl)
+    @keychain ||= LruRedux::TTL::ThreadSafeCache.new(25, config.keychain_ttl)
   end
 
   class << self

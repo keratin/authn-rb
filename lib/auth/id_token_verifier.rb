@@ -31,7 +31,7 @@ module Auth
     end
 
     def token_intact?
-      jwt.verify!(@keychain.fetch(jwt['iss']))
+      jwt.verify!(@keychain.fetch(jwt['iss']){ Issuer.new(jwt['iss']).signing_key })
     rescue JSON::JWT::VerificationFailed, JSON::JWT::UnexpectedAlgorithm
       false
     end

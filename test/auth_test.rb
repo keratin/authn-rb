@@ -6,7 +6,7 @@ class AuthTest < Auth::TestCase
 
   def teardown
     super
-    Auth.keychain.send(:clear)
+    Auth.keychain.clear
   end
 
   test 'version number' do
@@ -49,19 +49,24 @@ class AuthTest < Auth::TestCase
     end
 
     test "with cached issuer keys" do
-      Auth.keychain.send(:store, Auth.config.issuer, Time.now + 3600, jws_keypair.to_jwk)
+      Auth.keychain[Auth.config.issuer] = jws_keypair.to_jwk
 
       jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
       assert_equal jwt['sub'], Auth.subject_from(jwt.to_s)
     end
 
-    test "with expired issuer keys" do
-      old_key = OpenSSL::PKey::RSA.new(512)
-      Auth.keychain.send(:store, Auth.config.issuer, Time.now - 3600, old_key.to_jwk)
+    test "with expired and stale issuer keys" do
+      begin
+        Timecop.freeze(Time.now)
+        Auth.keychain[Auth.config.issuer] = OpenSSL::PKey::RSA.new(512).to_jwk
+        Timecop.freeze(Time.now + Auth.config.keychain_ttl + 1)
 
-      stub_auth_server
-      jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
-      assert_equal jwt['sub'], Auth.subject_from(jwt.to_s)
+        stub_auth_server
+        jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
+        assert_equal jwt['sub'], Auth.subject_from(jwt.to_s)
+      ensure
+        Timecop.return
+      end
     end
 
     test "with valid JWT for different audience" do

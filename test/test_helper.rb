@@ -6,6 +6,8 @@ require 'minitest/autorun'
 Auth.config.issuer = "https://issuer.tech"
 Auth.config.audience = "audience.tech"
 
+require 'timecop'
+
 class Auth::TestCase < Minitest::Test
   def self.testing(name, &block)
     raise "already testing #{@testing}" if @testing
