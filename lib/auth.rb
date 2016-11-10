@@ -1,4 +1,5 @@
 require_relative 'auth/version'
+require_relative 'auth/engine' if defined?(Rails)
 require_relative 'auth/id_token_verifier'
 require_relative 'auth/issuer'
 
