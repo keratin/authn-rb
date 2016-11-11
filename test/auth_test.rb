@@ -74,11 +74,6 @@ class AuthTest < Auth::TestCase
       assert_equal nil, Auth.subject_from(jwt.to_s)
     end
 
-    test "with stale JWT" do
-      jwt = JSON::JWT.new(claims.merge(iat: (Time.now - 86400).to_i)).sign(jws_keypair, 'RS256')
-      assert_equal nil, Auth.subject_from(jwt.to_s)
-    end
-
     test "with expired JWT" do
       jwt = JSON::JWT.new(claims.merge(exp: (Time.now - 1).to_i)).sign(jws_keypair, 'RS256')
       assert_equal nil, Auth.subject_from(jwt.to_s)

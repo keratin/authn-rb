@@ -13,17 +13,12 @@ module Auth
     def verified?
       jwt.present? &&
         token_for_us? &&
-        token_is_fresh? &&
         !token_expired? &&
         token_intact?
     end
 
     def token_for_us?
       jwt[:aud] == Auth.config.audience
-    end
-
-    def token_is_fresh?
-      jwt[:iat].between?(@time - 30, @time)
     end
 
     def token_expired?
