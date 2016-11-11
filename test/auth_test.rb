@@ -13,7 +13,7 @@ class AuthTest < Auth::TestCase
     refute_nil ::Auth::VERSION
   end
 
-  testing '#subject_from' do
+  testing '.subject_from' do
     test "with valid JWT" do
       stub_auth_server
       jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
@@ -77,6 +77,16 @@ class AuthTest < Auth::TestCase
     test "with expired JWT" do
       jwt = JSON::JWT.new(claims.merge(exp: (Time.now - 1).to_i)).sign(jws_keypair, 'RS256')
       assert_equal nil, Auth.subject_from(jwt.to_s)
+    end
+  end
+
+  testing '.logout_url' do
+    test 'with a next url' do
+      assert_equal 'https://issuer.tech/sessions/logout?redirect_uri=https%3A%2F%2Fapp.tech', Auth.logout_url(return_to: 'https://app.tech')
+    end
+
+    test 'without a next url' do
+      assert_equal 'https://issuer.tech/sessions/logout', Auth.logout_url
     end
   end
 
