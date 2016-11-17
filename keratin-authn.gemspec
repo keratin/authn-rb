@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Keratin::AuthN::VERSION
   spec.authors       = ["Lance Ivy"]
   spec.email         = ["lance@cainlevy.net"]
+  spec.license       = "LGPL-3.0"
 
   spec.summary       = %q{Client gem for keratin/authn service.}
   # spec.description   = %q{}
