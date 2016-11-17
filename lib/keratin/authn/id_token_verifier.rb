@@ -1,4 +1,4 @@
-module Auth
+module Keratin::AuthN
   class IDTokenVerifier
     def initialize(str, keychain)
       @id_token = str
@@ -18,7 +18,7 @@ module Auth
     end
 
     def token_for_us?
-      jwt[:aud] == Auth.config.audience
+      jwt[:aud] == Keratin::AuthN.config.audience
     end
 
     def token_expired?

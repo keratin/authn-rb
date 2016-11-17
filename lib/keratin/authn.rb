@@ -1,12 +1,12 @@
-require_relative 'auth/version'
-require_relative 'auth/engine' if defined?(Rails)
-require_relative 'auth/id_token_verifier'
-require_relative 'auth/issuer'
+require_relative 'authn/version'
+require_relative 'authn/engine' if defined?(Rails)
+require_relative 'authn/id_token_verifier'
+require_relative 'authn/issuer'
 
 require 'lru_redux'
 require 'json/jwt'
 
-module Auth
+module Keratin::AuthN
   class Config
     # the domain (host) of the main application.
     # e.g. "audience.tech"
@@ -50,7 +50,7 @@ module Auth
     def logout_url(return_to: nil)
       query = {redirect_uri: return_to}.to_param if return_to
 
-      "#{Auth.config.issuer}/sessions/logout#{?? if query}#{query}"
+      "#{config.issuer}/sessions/logout#{?? if query}#{query}"
     end
   end
 

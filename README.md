@@ -1,15 +1,15 @@
-# Auth
+# Keratin AuthN
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/auth/rb`. To experiment with that code, run `bin/console` for an interactive prompt.
+Keratin AuthN is an authentication service that keeps you in control of the experience without forcing you to be an expert in web security.
 
-TODO: Delete this and the text above, and describe your gem
+This gem provides utilities to help integrate with a Ruby application.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'auth-rb', require: 'auth'
+gem 'keratin-authn'
 ```
 
 And then execute:
@@ -18,7 +18,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install auth-rb
+    $ gem install keratin-authn
 
 ## Usage
 
@@ -32,5 +32,5 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/auth-rb. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/keratin/authn-rb. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 

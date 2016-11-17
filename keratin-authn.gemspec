@@ -1,15 +1,15 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'auth/version'
+require 'keratin/authn/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "auth-rb"
-  spec.version       = Auth::VERSION
+  spec.name          = "keratin-authn"
+  spec.version       = Keratin::AuthN::VERSION
   spec.authors       = ["Lance Ivy"]
   spec.email         = ["lance@cainlevy.net"]
 
-  spec.summary       = %q{Client gem for $CODENAME/auth service.}
+  spec.summary       = %q{Client gem for keratin/authn service.}
   # spec.description   = %q{}
   # spec.homepage      = ""
 
@@ -18,8 +18,7 @@ Gem::Specification.new do |spec|
   if spec.respond_to?(:metadata)
     # spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
   else
-    raise "RubyGems 2.0 or newer is required to protect against " \
-      "public gem pushes."
+    raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
   end
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|

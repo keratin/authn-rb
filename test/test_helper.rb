@@ -1,14 +1,14 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
-require 'auth'
+require 'keratin/authn'
 
 require 'minitest/autorun'
 
-Auth.config.issuer = "https://issuer.tech"
-Auth.config.audience = "audience.tech"
+Keratin::AuthN.config.issuer = "https://issuer.tech"
+Keratin::AuthN.config.audience = "audience.tech"
 
 require 'timecop'
 
-class Auth::TestCase < Minitest::Test
+class Keratin::AuthN::TestCase < Minitest::Test
   def self.testing(name, &block)
     raise "already testing #{@testing}" if @testing
     @testing = name

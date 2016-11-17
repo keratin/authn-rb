@@ -1,8 +1,8 @@
-module Auth
+module Keratin::AuthN
   class Issuer
     def initialize(str)
       @uri = str
-      @config_uri = @uri + Auth.config.configuration_path
+      @config_uri = @uri + Keratin::AuthN.config.configuration_path
     end
 
     def signing_key

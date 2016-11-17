@@ -1,0 +1,5 @@
+module Keratin
+  module AuthN
+    VERSION = "0.0.1"
+  end
+end
