@@ -4,6 +4,8 @@ Keratin AuthN is an authentication service that keeps you in control of the expe
 
 This gem provides utilities to help integrate with a Ruby application. You may also be interested in keratin/authn-js for frontend integration.
 
+[![Gem Version](https://badge.fury.io/rb/keratin-authn.svg)](http://badge.fury.io/rb/keratin-authn) [![Build Status](https://travis-ci.org/keratin/authn-rb.svg?branch=master)](https://travis-ci.org/keratin/authn-rb)
+
 ## Installation
 
 Add this line to your application's Gemfile:
