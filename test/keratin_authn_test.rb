@@ -4,11 +4,6 @@ require 'keratin/authn/testing'
 class Keratin::AuthNTest < Keratin::AuthN::TestCase
   include Keratin::AuthN::Test::Helpers
 
-  def teardown
-    super
-    Keratin::AuthN.keychain.clear
-  end
-
   test 'version number' do
     refute_nil ::Keratin::AuthN::VERSION
   end
