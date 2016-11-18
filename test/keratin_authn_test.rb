@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 require 'keratin/authn/testing'
 
-class AuthTest < Keratin::AuthN::TestCase
+class Keratin::AuthNTest < Keratin::AuthN::TestCase
   include Keratin::AuthN::Test::Helpers
 
   def teardown
