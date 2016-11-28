@@ -1,3 +1,5 @@
+require 'uri'
+
 module Keratin::AuthN
   class IDTokenVerifier
     def initialize(str, keychain)
@@ -19,7 +21,9 @@ module Keratin::AuthN
     end
 
     def token_from_us?
-      jwt[:iss] == Keratin::AuthN.config.issuer
+      # the server or client may be configured with an extra trailing slash, unnecessary port number,
+      # or something else that is an equivalent URI but not an equivalent string.
+      URI.parse(jwt[:iss]) == URI.parse(Keratin::AuthN.config.issuer)
     end
 
     def token_for_us?

@@ -1,8 +1,10 @@
+require 'net/http'
+
 module Keratin::AuthN
   class Issuer
     def initialize(str)
       @uri = str
-      @config_uri = @uri + Keratin::AuthN.config.configuration_path
+      @config_uri = @uri.chomp('/') + Keratin::AuthN.config.configuration_path
     end
 
     def signing_key

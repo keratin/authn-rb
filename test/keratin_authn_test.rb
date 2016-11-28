@@ -72,6 +72,13 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
       assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
     end
 
+    test "with valid JWT from same issuer with different formatting" do
+      stub_auth_server
+      jwt = JSON::JWT.new(claims.merge(iss: Keratin::AuthN.config.issuer + '/')).sign(jws_keypair, 'RS256')
+      refute_equal jwt['iss'], Keratin::AuthN.config.issuer
+      assert_equal jwt['sub'], Keratin::AuthN.subject_from(jwt.to_s)
+    end
+
     test "with valid JWT for different audience" do
       jwt = JSON::JWT.new(claims.merge(aud: 'https://evil.tech')).sign(jws_keypair, 'RS256')
       assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
