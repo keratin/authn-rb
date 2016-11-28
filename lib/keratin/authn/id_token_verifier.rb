@@ -12,9 +12,14 @@ module Keratin::AuthN
 
     def verified?
       jwt.present? &&
+        token_from_us? &&
         token_for_us? &&
         !token_expired? &&
         token_intact?
+    end
+
+    def token_from_us?
+      jwt[:iss] == Keratin::AuthN.config.issuer
     end
 
     def token_for_us?

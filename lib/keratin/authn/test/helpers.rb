@@ -24,17 +24,17 @@ module Keratin::AuthN
       end
 
       # stubs the endpoints necessary to validate a signed JWT
-      private def stub_auth_server
+      private def stub_auth_server(issuer: Keratin::AuthN.config.issuer, keypair: jws_keypair)
         Keratin::AuthN.keychain.clear
-        stub_request(:get, "#{Keratin::AuthN.config.issuer}#{Keratin::AuthN.config.configuration_path}").to_return(
+        stub_request(:get, "#{issuer}#{Keratin::AuthN.config.configuration_path}").to_return(
           status: 200,
-          body: {'jwks_uri' => "#{Keratin::AuthN.config.issuer}/jwks"}.to_json
+          body: {'jwks_uri' => "#{issuer}/jwks"}.to_json
         )
-        stub_request(:get, "#{Keratin::AuthN.config.issuer}/jwks").to_return(
+        stub_request(:get, "#{issuer}/jwks").to_return(
           status: 200,
           body: {
             keys: [
-              jws_keypair.public_key.to_jwk.slice(:kty, :kid, :e, :n).merge(
+              keypair.public_key.to_jwk.slice(:kty, :kid, :e, :n).merge(
                 use: 'sig',
                 alg: JWS_ALGORITHM
               )

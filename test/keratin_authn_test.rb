@@ -64,6 +64,14 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
       end
     end
 
+    test "with valid JWT from different issuer" do
+      evil_keypair = OpenSSL::PKey::RSA.new(512)
+      stub_auth_server(issuer: "https://evil.tech", keypair: evil_keypair)
+
+      jwt = JSON::JWT.new(claims.merge(iss: 'https://evil.tech')).sign(evil_keypair, 'RS256')
+      assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
+    end
+
     test "with valid JWT for different audience" do
       jwt = JSON::JWT.new(claims.merge(aud: 'https://evil.tech')).sign(jws_keypair, 'RS256')
       assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
