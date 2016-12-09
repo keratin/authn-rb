@@ -26,7 +26,7 @@ module Keratin::AuthN
       # stubs the endpoints necessary to validate a signed JWT
       private def stub_auth_server(issuer: Keratin::AuthN.config.issuer, keypair: jws_keypair)
         Keratin::AuthN.keychain.clear
-        stub_request(:get, "#{issuer}#{Keratin::AuthN.config.configuration_path}").to_return(
+        stub_request(:get, "#{issuer}/configuration").to_return(
           status: 200,
           body: {'jwks_uri' => "#{issuer}/jwks"}.to_json
         )

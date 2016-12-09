@@ -11,7 +11,7 @@ module Keratin::AuthN
     end
 
     def configuration
-      @configuration ||= get(path: Keratin::AuthN.config.configuration_path)
+      @configuration ||= get(path: '/configuration')
     end
 
     def keys
