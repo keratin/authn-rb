@@ -3,8 +3,7 @@ require 'net/http'
 module Keratin::AuthN
   class Issuer
     def initialize(str)
-      @uri = str
-      @config_uri = @uri.chomp('/') + Keratin::AuthN.config.configuration_path
+      @base = str.chomp('/')
     end
 
     def signing_key
@@ -12,17 +11,19 @@ module Keratin::AuthN
     end
 
     def configuration
-      @configuration ||= JSON.parse(
-        Net::HTTP.get(URI.parse(@config_uri))
-      )
+      @configuration ||= get(path: Keratin::AuthN.config.configuration_path)
     end
 
     def keys
       @keys ||= JSON::JWK::Set.new(
-        JSON.parse(
-          Net::HTTP.get(URI.parse(configuration['jwks_uri']))
-        )
+        get(url: configuration['jwks_uri'])
       )
+    end
+
+    private def get(path: nil, url: nil)
+      uri = URI.parse(url || "#{@base}#{path}")
+
+      JSON.parse(Net::HTTP.get(uri))
     end
   end
 end
