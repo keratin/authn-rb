@@ -25,6 +25,10 @@ Keratin::AuthN.config.tap do |config|
 
   # The domain of your application
   config.audience = 'myapp.com'
+
+  # HTTP basic auth for using AuthN's private endpoints
+  config.username = 'secret'
+  config.password = 'secret'
 end
 ```
 

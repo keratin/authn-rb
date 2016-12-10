@@ -1,7 +1,8 @@
+require 'keratin/client'
 require 'net/http'
 
 module Keratin::AuthN
-  class Issuer
+  class Issuer < Keratin::Client
     def initialize(str)
       @base = str.chomp('/')
     end
@@ -11,19 +12,13 @@ module Keratin::AuthN
     end
 
     def configuration
-      @configuration ||= get(path: '/configuration')
+      @configuration ||= get(path: '/configuration').data
     end
 
     def keys
       @keys ||= JSON::JWK::Set.new(
-        get(url: configuration['jwks_uri'])
+        get(path: URI.parse(configuration['jwks_uri']).path).data
       )
-    end
-
-    private def get(path: nil, url: nil)
-      uri = URI.parse(url || "#{@base}#{path}")
-
-      JSON.parse(Net::HTTP.get(uri))
     end
   end
 end

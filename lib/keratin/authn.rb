@@ -8,7 +8,11 @@ require 'json/jwt'
 
 module Keratin
   def self.authn
-    @authn ||= Issuer.new(Keratin::AuthN.issuer)
+    @authn ||= Issuer.new(
+      Keratin::AuthN.config.issuer,
+      username: Keratin::AuthN.config.username,
+      password: Keratin::AuthN.config.password
+    )
   end
 
   module AuthN
@@ -24,6 +28,12 @@ module Keratin
       # how long (in seconds) to keep keys in the keychain before refreshing.
       # default: 3600
       attr_accessor :keychain_ttl
+
+      # the http basic auth username for accessing private endpoints of the authn issuer.
+      attr_accessor :username
+
+      # the http basic auth password for accessing private endpoints of the authn issuer.
+      attr_accessor :password
     end
 
     def self.config
