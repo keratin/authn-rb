@@ -25,12 +25,55 @@ Keratin::AuthN.config.tap do |config|
 
   # The domain of your application
   config.audience = 'myapp.com'
+
+  # HTTP basic auth for using AuthN's private endpoints
+  config.username = 'secret'
+  config.password = 'secret'
 end
 ```
 
-Use `Keratin::AuthN.subject_from(params[:id_token])` to validate tokens and fetch an `account_id` during signup, login, and session verification.
+### Reading the Session
 
-Send users to `Keratin::AuthN.logout_url(return_to: some_path)` to log them out from the AuthN server.
+Use `Keratin::AuthN.subject_from(params[:authn])` to fetch an `account_id` from the session if and
+only if the session is valid.
+
+### Logging Out
+
+Send users to `Keratin::AuthN.logout_url(return_to: some_path)` to log them out from the AuthN
+server. If you use [keratin/authn-js](https://github.com/keratin/authn-js), you might prefer the
+logout functionality there as it can also take care of deleting the cookie.
+
+### Modifying Accounts
+
+* `Keratin.authn.lock(account_id)`: will lock an account, revoking all sessions (when they time out)
+  and disallowing any new logins. Intended for user moderation actions.
+* `Keratin.authn.unlock(account_id)`: will unlock an account, restoring normal functionality.
+* `Keratin.authn.archive(account_id)`: will wipe all personal information, including username and
+  password. Intended for user deletion routine.
+
+### Example: Sessions
+
+You should store the token in a cookie (the [keratin/authn-js](https://github.com/keratin/authn-js)
+integration can do this automatically) and continue using it to verify a logged-in session:
+
+```ruby
+class ApplicationController
+  private
+
+  def logged_in?
+    !! current_account_id
+  end
+
+  def current_user
+    return @current_user if defined? @current_user
+    @current_user = User.find_by_account_id(current_account_id)
+  end
+
+  def current_account_id
+    Keratin::AuthN.subject_from(cookies[:authn])
+  end
+end
+```
 
 ### Example: Signup
 
@@ -38,7 +81,7 @@ Send users to `Keratin::AuthN.logout_url(return_to: some_path)` to log them out 
 class UsersController
   def create
     @user = User.new(params.require(:user).permit(:name, :email))
-    @user.account_id = Keratin::AuthN.subject_from(params[:user][:id_token])
+    @user.account_id = current_account_id
 
     # ...
   end
@@ -50,28 +93,9 @@ end
 ```ruby
 class SessionsController
   def create
-    @user = User.find_by_account_id(Keratin::AuthN.subject_from(cookies[:id_token]))
+    @user = current_user
 
     # ...
-  end
-end
-```
-
-### Example: Sessions
-
-You should store the token in a cookie and continue using it to verify a logged-in session:
-
-```ruby
-class ApplicationController
-  private
-
-  def logged_in?
-    !! Keratin::AuthN.subject_from(cookies[:id_token])
-  end
-
-  def current_user
-    return @current_user if defined? @current_user
-    @current_user = User.find_by_account_id(Keratin::AuthN.subject_from(cookies[:id_token])
   end
 end
 ```

@@ -1,10 +1,18 @@
+require 'keratin/client'
 require 'net/http'
 
 module Keratin::AuthN
-  class Issuer
-    def initialize(str)
-      @uri = str
-      @config_uri = @uri.chomp('/') + Keratin::AuthN.config.configuration_path
+  class Issuer < Keratin::Client
+    def lock(account_id)
+      patch(path: "/accounts/:account_id/lock").result
+    end
+
+    def unlock(account_id)
+      patch(path: "/accounts/:account_id/unlock").result
+    end
+
+    def archive(account_id)
+      delete(path: "/accounts/:account_id").result
     end
 
     def signing_key
@@ -12,16 +20,12 @@ module Keratin::AuthN
     end
 
     def configuration
-      @configuration ||= JSON.parse(
-        Net::HTTP.get(URI.parse(@config_uri))
-      )
+      @configuration ||= get(path: '/configuration').data
     end
 
     def keys
       @keys ||= JSON::JWK::Set.new(
-        JSON.parse(
-          Net::HTTP.get(URI.parse(configuration['jwks_uri']))
-        )
+        get(path: URI.parse(configuration['jwks_uri']).path).data
       )
     end
   end
