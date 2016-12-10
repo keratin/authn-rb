@@ -3,8 +3,16 @@ require 'net/http'
 
 module Keratin::AuthN
   class Issuer < Keratin::Client
-    def initialize(str)
-      @base = str.chomp('/')
+    def lock(account_id)
+      patch(path: "/accounts/:account_id/lock").result
+    end
+
+    def unlock(account_id)
+      patch(path: "/accounts/:account_id/unlock").result
+    end
+
+    def archive(account_id)
+      delete(path: "/accounts/:account_id").result
     end
 
     def signing_key
