@@ -80,7 +80,8 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
       begin
         client.send(:get, path: '/some/path')
       rescue Keratin::ClientError => response
-        assert_equal [{"field"=>"account", "message"=>"NOT_FOUND"}], response.errors
+        assert_equal({"account" => ["NOT_FOUND"]}, response.errors)
+        assert_equal '{"account"=>["NOT_FOUND"]}', response.to_s
       end
     end
 

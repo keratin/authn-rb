@@ -15,7 +15,12 @@ module Keratin
     attr_reader :errors
 
     def initialize(errors)
-      @errors = errors
+      @errors = errors.map{|e| [e['field'], e['message']] }
+        .group_by(&:first)
+        .map{|k, v| [k, v.map(&:last)] }
+        .to_h
+
+      super(@errors.inspect)
     end
   end
 
