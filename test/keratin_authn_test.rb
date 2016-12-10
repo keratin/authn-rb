@@ -16,31 +16,31 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
     end
 
     test "with invalid JWT" do
-      assert_equal nil, Keratin::AuthN.subject_from(nil)
-      assert_equal nil, Keratin::AuthN.subject_from('')
-      assert_equal nil, Keratin::AuthN.subject_from('a')
-      assert_equal nil, Keratin::AuthN.subject_from('a.b')
-      assert_equal nil, Keratin::AuthN.subject_from('a.b.c')
+      assert_nil Keratin::AuthN.subject_from(nil)
+      assert_nil Keratin::AuthN.subject_from('')
+      assert_nil Keratin::AuthN.subject_from('a')
+      assert_nil Keratin::AuthN.subject_from('a.b')
+      assert_nil Keratin::AuthN.subject_from('a.b.c')
     end
 
     test "with unsigned JWT" do
       stub_auth_server
       jwt = JSON::JWT.new(claims)
-      assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 
     test "with JWT signed by unknown keypair" do
       stub_auth_server
       some_key = OpenSSL::PKey::RSA.new(512)
       jwt = JSON::JWT.new(claims).sign(some_key, 'RS256')
-      assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 
     test "with tampered JWT" do
       stub_auth_server
       jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
       jwt['sub'] = 999999
-      assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 
     test "with cached issuer keys" do
@@ -69,7 +69,7 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
       stub_auth_server(issuer: "https://evil.tech", keypair: evil_keypair)
 
       jwt = JSON::JWT.new(claims.merge(iss: 'https://evil.tech')).sign(evil_keypair, 'RS256')
-      assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 
     test "with valid JWT from same issuer with different formatting" do
@@ -81,12 +81,12 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
 
     test "with valid JWT for different audience" do
       jwt = JSON::JWT.new(claims.merge(aud: 'https://evil.tech')).sign(jws_keypair, 'RS256')
-      assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 
     test "with expired JWT" do
       jwt = JSON::JWT.new(claims.merge(exp: (Time.now - 1).to_i)).sign(jws_keypair, 'RS256')
-      assert_equal nil, Keratin::AuthN.subject_from(jwt.to_s)
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
   end
 
