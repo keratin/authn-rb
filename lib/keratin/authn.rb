@@ -8,10 +8,9 @@ require 'json/jwt'
 
 module Keratin
   def self.authn
-    @authn ||= Issuer.new(
-      Keratin::AuthN.config.issuer,
-      username: Keratin::AuthN.config.username,
-      password: Keratin::AuthN.config.password
+    @authn ||= AuthN::Issuer.new(AuthN.config.issuer,
+      username: AuthN.config.username,
+      password: AuthN.config.password
     )
   end
 
