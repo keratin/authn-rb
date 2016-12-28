@@ -4,6 +4,11 @@ require 'keratin/authn/testing'
 class Keratin::AuthNTest < Keratin::AuthN::TestCase
   include Keratin::AuthN::Test::Helpers
 
+  def setup
+    Keratin::AuthN.keychain.clear
+    super
+  end
+
   test 'version number' do
     refute_nil ::Keratin::AuthN::VERSION
   end
@@ -36,10 +41,27 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
       assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 
-    test "with tampered JWT" do
+    test "with tampered claims JWT" do
       stub_auth_server
       jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
       jwt['sub'] = 999999
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
+    end
+
+    test "with tampered alg=none JWT" do
+      stub_auth_server
+      jwt = JSON::JWT.new(claims).sign(jws_keypair, 'RS256')
+      jwt.alg = 'none'
+      jwt.signature = ''
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
+    end
+
+    test "with tampered alg=hmac JWT" do
+      stub_auth_server
+      jwt = JSON::JWT.new(claims).sign(jws_keypair.public_key.to_jwk.to_s, 'HS256')
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s)
+
+      jwt = JSON::JWT.new(claims).sign(jws_keypair.public_key.to_s, 'HS256')
       assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 

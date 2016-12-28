@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'keratin/authn'
 
+require 'byebug'
 require 'minitest/autorun'
 
 Keratin::AuthN.config.issuer = "https://issuer.tech"
