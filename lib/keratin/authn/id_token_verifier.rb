@@ -35,7 +35,7 @@ module Keratin::AuthN
     end
 
     def token_intact?
-      jwt.verify!(@keychain.getset(jwt['iss']){ Issuer.new(jwt['iss']).signing_key(jwt.kid) })
+      jwt.verify!(@keychain.getset(jwt.kid){ Issuer.new(jwt['iss']).signing_key(jwt.kid) })
     rescue JSON::JWT::VerificationFailed, JSON::JWT::UnexpectedAlgorithm
       false
     end

@@ -65,8 +65,8 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
       assert_nil Keratin::AuthN.subject_from(jwt.to_s)
     end
 
-    test "with cached issuer keys" do
-      Keratin::AuthN.keychain[Keratin::AuthN.config.issuer] = jws_keypair.to_jwk
+    test "with cached keys" do
+      Keratin::AuthN.keychain[jws_keypair.to_jwk[:kid]] = jws_keypair.to_jwk
 
       jwt = JSON::JWT.new(claims).sign(jws_keypair.to_jwk, 'RS256')
       assert_equal jwt['sub'], Keratin::AuthN.subject_from(jwt.to_s)
