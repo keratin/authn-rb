@@ -13,7 +13,7 @@ module Keratin::AuthN
           sub: subject,
           iat: 10.seconds.ago,
           exp: 1.hour.from_now
-        ).sign(jws_keypair, JWS_ALGORITHM).to_s
+        ).sign(jws_keypair.to_jwk, JWS_ALGORITHM).to_s
       end
 
       # a temporary RSA key for our test suite.

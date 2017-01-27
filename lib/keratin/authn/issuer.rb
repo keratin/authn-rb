@@ -15,8 +15,8 @@ module Keratin::AuthN
       delete(path: "/accounts/:account_id").result
     end
 
-    def signing_key
-      keys.find{|k| k['use'] == 'sig' }
+    def signing_key(kid)
+      keys.find{|k| k['use'] == 'sig' && (kid.blank? || kid == k['kid']) }
     end
 
     def configuration
