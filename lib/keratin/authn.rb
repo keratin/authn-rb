@@ -2,6 +2,7 @@ require_relative 'authn/version'
 require_relative 'authn/engine' if defined?(Rails)
 require_relative 'authn/id_token_verifier'
 require_relative 'authn/remote_signature_verifier'
+require_relative 'authn/mock_signature_verifier'
 require_relative 'authn/issuer'
 
 require 'lru_redux'
@@ -42,17 +43,28 @@ module Keratin
       end
     end
 
+    # The default strategy for signature verification will find the JWT's issuer, fetch the JWKs
+    # from that server, choose the correct key by id, and finally verify the JWT. The keys are
+    # then cached in memory to reduce network traffic.
     def self.signature_verifier
       @verifier ||= RemoteSignatureVerifier.new(
         LruRedux::TTL::ThreadSafeCache.new(25, config.keychain_ttl)
       )
     end
 
+    # If the default strategy is not desired (as in host application tests), different strategies
+    # may be specified here. The strategy must define a `verify(jwt)` method.
+    def self.signature_verifier=(val)
+      if val.respond_to?(:verify) && val.method(:verify).arity == 1
+        @verifier = val
+      else
+        raise ArgumentError.new("Please ensure that your signature verifier has been instantiated and implements `def verify(jwt)`.")
+      end
+    end
+
     class << self
       # safely fetches a subject from the id token after checking relevant claims and
       # verifying the signature.
-      #
-      # this may involve HTTP requests to fetch the issuer's configuration and JWKs.
       def subject_from(id_token)
         verifier = IDTokenVerifier.new(id_token, signature_verifier)
         verifier.subject if verifier.verified?
