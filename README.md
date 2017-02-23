@@ -100,7 +100,27 @@ class SessionsController
 end
 ```
 
-## Development
+## Testing Your App
+
+AuthN provides helpers for working with tokens in your application's controller and integration tests.
+
+In your `test/test_helper.rb` or equivalent:
+
+```ruby
+# Configuring AuthN to use the MockSignatureVerifier will stop your tests from attempting to connect
+# to the remote issuer during tests.
+Keratin::AuthN.signature_verifier = Keratin::AuthN::MockSignatureVerifier.new
+
+# Including the Test::Helpers module grants access to `id_token_for(user.account_id)`, so that you
+# can test your system with real tokens.
+module ActionDispatch
+  class IntegrationTest
+    include Keratin::AuthN::Test::Helpers
+  end
+end
+```
+
+## Developing AuthN
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 

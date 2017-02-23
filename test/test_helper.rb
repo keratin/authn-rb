@@ -3,11 +3,11 @@ require 'keratin/authn'
 
 require 'byebug'
 require 'minitest/autorun'
+require 'timecop'
+require 'webmock/minitest'
 
 Keratin::AuthN.config.issuer = "https://issuer.tech"
 Keratin::AuthN.config.audience = "audience.tech"
-
-require 'timecop'
 
 class Keratin::AuthN::TestCase < Minitest::Test
   def self.testing(name, &block)
