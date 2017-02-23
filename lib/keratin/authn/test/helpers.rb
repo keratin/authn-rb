@@ -1,5 +1,3 @@
-require 'webmock/minitest'
-
 module Keratin::AuthN
   module Test
     module Helpers
@@ -16,33 +14,12 @@ module Keratin::AuthN
         ).sign(jws_keypair.to_jwk, JWS_ALGORITHM).to_s
       end
 
-      # a temporary RSA key for our test suite.
+      # a temporary RSA key for the test suite.
       #
       # generates the smallest (fastest) key possible for RS256
       private def jws_keypair
         @keypair ||= OpenSSL::PKey::RSA.new(512)
       end
-
-      # stubs the endpoints necessary to validate a signed JWT
-      private def stub_auth_server(issuer: Keratin::AuthN.config.issuer, keypair: jws_keypair)
-        Keratin::AuthN.keychain.clear
-        stub_request(:get, "#{issuer}/configuration").to_return(
-          status: 200,
-          body: {'jwks_uri' => "#{issuer}/jwks"}.to_json
-        )
-        stub_request(:get, "#{issuer}/jwks").to_return(
-          status: 200,
-          body: {
-            keys: [
-              keypair.public_key.to_jwk.slice(:kty, :kid, :e, :n).merge(
-                use: 'sig',
-                alg: JWS_ALGORITHM
-              )
-            ]
-          }.to_json
-        )
-      end
-
     end
   end
 end
