@@ -1,6 +1,7 @@
 require_relative 'authn/version'
 require_relative 'authn/engine' if defined?(Rails)
 require_relative 'authn/id_token_verifier'
+require_relative 'authn/remote_signature_verifier'
 require_relative 'authn/issuer'
 
 require 'lru_redux'
@@ -41,8 +42,10 @@ module Keratin
       end
     end
 
-    def self.keychain
-      @keychain ||= LruRedux::TTL::ThreadSafeCache.new(25, config.keychain_ttl)
+    def self.signature_verifier
+      @verifier ||= RemoteSignatureVerifier.new(
+        LruRedux::TTL::ThreadSafeCache.new(25, config.keychain_ttl)
+      )
     end
 
     class << self
@@ -51,7 +54,7 @@ module Keratin
       #
       # this may involve HTTP requests to fetch the issuer's configuration and JWKs.
       def subject_from(id_token)
-        verifier = IDTokenVerifier.new(id_token, keychain)
+        verifier = IDTokenVerifier.new(id_token, signature_verifier)
         verifier.subject if verifier.verified?
       end
 
