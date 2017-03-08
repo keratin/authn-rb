@@ -10,7 +10,8 @@ require 'json/jwt'
 
 module Keratin
   def self.authn
-    @authn ||= AuthN::Issuer.new(AuthN.config.issuer,
+    @authn ||= AuthN::Issuer.new(
+      AuthN.config.issuer,
       username: AuthN.config.username,
       password: AuthN.config.password
     )
@@ -55,11 +56,11 @@ module Keratin
     # If the default strategy is not desired (as in host application tests), different strategies
     # may be specified here. The strategy must define a `verify(jwt)` method.
     def self.signature_verifier=(val)
-      if val.respond_to?(:verify) && val.method(:verify).arity == 1
-        @verifier = val
-      else
-        raise ArgumentError.new("Please ensure that your signature verifier has been instantiated and implements `def verify(jwt)`.")
+      unless val.respond_to?(:verify) && val.method(:verify).arity == 1
+        raise ArgumentError, 'Please ensure that your signature verifier has been instantiated and implements `def verify(jwt)`.'
       end
+
+      @verifier = val
     end
 
     class << self
@@ -73,7 +74,7 @@ module Keratin
       def logout_url(return_to: nil)
         query = {redirect_uri: return_to}.to_param if return_to
 
-        "#{config.issuer}/sessions/logout#{?? if query}#{query}"
+        "#{config.issuer}/sessions/logout#{'?' if query}#{query}"
       end
     end
   end

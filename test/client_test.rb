@@ -1,8 +1,8 @@
 require_relative 'test_helper'
 
 class Keratin::ClientTest < Keratin::AuthN::TestCase
-  BASE = "https://example.service"
-  BASIC_AUTH = {basic_auth: ['hello', 'world']}
+  BASE = 'https://example.service'
+  BASIC_AUTH = {basic_auth: %w(hello world)}
 
   def client
     @client ||= Keratin::Client.new(BASE, username: 'hello', password: 'world')
@@ -19,7 +19,7 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
     test 'with path' do
       stub = stub_request(:get, "#{BASE}/some/path")
         .with(BASIC_AUTH)
-        .to_return(body: "{}")
+        .to_return(body: '{}')
 
       client.send(:get, path: '/some/path')
 
@@ -31,7 +31,7 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
     test 'with path' do
       stub = stub_request(:patch, "#{BASE}/some/path")
         .with(BASIC_AUTH)
-        .to_return(body: "{}")
+        .to_return(body: '{}')
 
       client.send(:patch, path: '/some/path')
 
@@ -43,7 +43,7 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
     test 'with path' do
       stub = stub_request(:delete, "#{BASE}/some/path")
         .with(BASIC_AUTH)
-        .to_return(body: "{}")
+        .to_return(body: '{}')
 
       client.send(:delete, path: '/some/path')
 
@@ -53,7 +53,7 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
 
   testing 'response:' do
     test '2xx' do
-      stub = stub_request(:get, "#{BASE}/some/path")
+      stub_request(:get, "#{BASE}/some/path")
         .with(BASIC_AUTH)
         .to_return(status: 200, body: '{"result": [1,2,3]}')
 
@@ -63,7 +63,7 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
     end
 
     test '3xx' do
-      stub = stub_request(:get, "#{BASE}/some/path")
+      stub_request(:get, "#{BASE}/some/path")
         .with(BASIC_AUTH)
         .to_return(status: 302, headers: {'Location' => 'https://example.com'})
 
@@ -73,22 +73,22 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
     end
 
     test '4xx' do
-      stub = stub_request(:get, "#{BASE}/some/path")
+      stub_request(:get, "#{BASE}/some/path")
         .with(BASIC_AUTH)
         .to_return(status: 404, body: '{"errors": [{"field": "account", "message": "NOT_FOUND"}]}')
 
       begin
         client.send(:get, path: '/some/path')
       rescue Keratin::ClientError => response
-        assert_equal({"account" => ["NOT_FOUND"]}, response.errors)
+        assert_equal({'account' => ['NOT_FOUND']}, response.errors)
         assert_equal '{"account"=>["NOT_FOUND"]}', response.to_s
       end
     end
 
     test '5xx' do
-      stub = stub_request(:get, "#{BASE}/some/path")
+      stub_request(:get, "#{BASE}/some/path")
         .with(BASIC_AUTH)
-        .to_return(status: 500, body: "500 WHOOPS")
+        .to_return(status: 500, body: '500 WHOOPS')
 
       begin
         client.send(:get, path: '/some/path')
@@ -98,7 +98,7 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
     end
 
     test 'timeout' do
-      stub = stub_request(:get, "#{BASE}/some/path")
+      stub_request(:get, "#{BASE}/some/path")
         .with(BASIC_AUTH)
         .to_raise(Net::OpenTimeout.new('could not connect'))
 
@@ -107,7 +107,6 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
       rescue Keratin::ServiceError => response
         assert_equal 'could not connect', response.message
       end
-
     end
   end
 end

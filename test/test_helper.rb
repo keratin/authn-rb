@@ -6,11 +6,11 @@ require 'minitest/autorun'
 require 'timecop'
 require 'webmock/minitest'
 
-Keratin::AuthN.config.issuer = "https://issuer.tech"
-Keratin::AuthN.config.audience = "audience.tech"
+Keratin::AuthN.config.issuer = 'https://issuer.tech'
+Keratin::AuthN.config.audience = 'audience.tech'
 
 class Keratin::AuthN::TestCase < Minitest::Test
-  def self.testing(name, &block)
+  def self.testing(name)
     raise "already testing #{@testing}" if @testing
     @testing = name
     yield
@@ -19,12 +19,12 @@ class Keratin::AuthN::TestCase < Minitest::Test
   end
 
   def self.test(name, &block)
-    method_name = ['test', @testing, name].compact.join(' ').gsub(' ', '_')
+    method_name = ['test', @testing, name].compact.join(' ').tr(' ', '_')
     if block_given?
       define_method method_name, &block
     else
       define_method method_name do
-        skip "not implemented"
+        skip 'not implemented'
       end
     end
   end

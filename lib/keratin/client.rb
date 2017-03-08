@@ -28,7 +28,6 @@ module Keratin
   end
 
   class Client
-
     attr_reader :base
 
     def initialize(base_url, username: nil, password: nil)
@@ -66,13 +65,13 @@ module Keratin
             'location' => response['Location']
           })
         when Net::HTTPClientError
-          raise ClientError.new(JSON.parse(response.body)['errors'])
+          raise ClientError, JSON.parse(response.body)['errors']
         when Net::HTTPServerError
-          raise ServiceError.new(response.body)
+          raise ServiceError, response.body
         end
       end
     rescue Net::OpenTimeout, Net::ReadTimeout => e
-      raise ServiceError.new(e.message)
+      raise ServiceError, e.message
     end
   end
 end

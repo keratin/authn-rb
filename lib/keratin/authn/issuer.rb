@@ -4,15 +4,15 @@ require 'net/http'
 module Keratin::AuthN
   class Issuer < Keratin::Client
     def lock(account_id)
-      patch(path: "/accounts/:account_id/lock").result
+      patch(path: '/accounts/:account_id/lock').result
     end
 
     def unlock(account_id)
-      patch(path: "/accounts/:account_id/unlock").result
+      patch(path: '/accounts/:account_id/unlock').result
     end
 
     def archive(account_id)
-      delete(path: "/accounts/:account_id").result
+      delete(path: '/accounts/:account_id').result
     end
 
     def signing_key(kid)
