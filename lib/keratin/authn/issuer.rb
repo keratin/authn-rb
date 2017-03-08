@@ -24,7 +24,7 @@ module Keratin::AuthN
     end
 
     private def keys
-      @keys ||= JSON::JWK::Set.new(
+      JSON::JWK::Set.new(
         get(path: URI.parse(configuration['jwks_uri']).path).data
       )
     end

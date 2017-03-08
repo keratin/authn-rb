@@ -27,16 +27,41 @@ class Keratin::IssuerTest < Keratin::AuthN::TestCase
     assert_requested(stub)
   end
 
-  test '#signing_key' do
-    stub_request(:get, 'https://issuer.tech/configuration').to_return(body: {'jwks_uri' => 'https://issuer.tech/jwks'}.to_json)
-    stub = stub_request(:get, 'https://issuer.tech/jwks').to_return(body: {
-      'keys' => [
-        {'use' => 'sig', 'kid' => 'key1', 'foo' => 'bar'},
-        {'use' => 'sig', 'kid' => 'key2', 'foo' => 'baz'}
-      ]
-    }.to_json)
+  testing '#signing_key' do
+    test 'with multiple keys' do
+      stub_request(:get, 'https://issuer.tech/configuration').to_return(body: {'jwks_uri' => 'https://issuer.tech/jwks'}.to_json)
+      stub = stub_request(:get, 'https://issuer.tech/jwks').to_return(body: {
+        'keys' => [
+          {'use' => 'sig', 'kid' => 'key1', 'foo' => 'bar'},
+          {'use' => 'sig', 'kid' => 'key2', 'foo' => 'baz'}
+        ]
+      }.to_json)
 
-    assert_equal 'baz', subject.signing_key('key2')['foo']
-    assert_requested(stub)
+      assert_equal 'baz', subject.signing_key('key2')['foo']
+      assert_requested(stub)
+    end
+
+    test 'after key rotation' do
+      stub_request(:get, 'https://issuer.tech/configuration').to_return(body: {'jwks_uri' => 'https://issuer.tech/jwks'}.to_json)
+      stub_request(:get, 'https://issuer.tech/jwks').to_return(body: {
+        'keys' => [
+          {'use' => 'sig', 'kid' => 'key1', 'foo' => 'bar'},
+          {'use' => 'sig', 'kid' => 'key2', 'foo' => 'baz'}
+        ]
+      }.to_json)
+
+      assert_equal 'bar', subject.signing_key('key1')['foo']
+      assert_equal 'baz', subject.signing_key('key2')['foo']
+
+      stub_request(:get, 'https://issuer.tech/jwks').to_return(body: {
+        'keys' => [
+          {'use' => 'sig', 'kid' => 'key2', 'foo' => 'baz'},
+          {'use' => 'sig', 'kid' => 'key3', 'foo' => 'qux'}
+        ]
+      }.to_json)
+
+      assert_equal 'baz', subject.signing_key('key2')['foo']
+      assert_equal 'qux', subject.signing_key('key3')['foo']
+    end
   end
 end
