@@ -36,12 +36,19 @@ module Keratin
 
       # the http basic auth password for accessing private endpoints of the authn issuer.
       attr_accessor :password
+
+      # optional logger for debug messages
+      attr_accessor :logger
     end
 
     def self.config
       @config ||= Config.new.tap do |config|
         config.keychain_ttl = 3600
       end
+    end
+
+    def self.debug
+      config.logger.debug{ yield } if config.logger
     end
 
     # The default strategy for signature verification will find the JWT's issuer, fetch the JWKs
