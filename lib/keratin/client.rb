@@ -39,6 +39,10 @@ module Keratin
       submit(Net::HTTP::Get, **opts)
     end
 
+    private def post(**opts)
+      submit(Net::HTTP::Post, **opts)
+    end
+
     private def patch(**opts)
       submit(Net::HTTP::Patch, **opts)
     end
@@ -47,11 +51,12 @@ module Keratin
       submit(Net::HTTP::Delete, **opts)
     end
 
-    private def submit(request_klass, path:)
+    private def submit(request_klass, path:, body: nil)
       uri = URI.parse("#{base}#{path}")
 
       request = request_klass.new(uri)
       request.basic_auth(*@auth) if @auth
+      request.set_form_data(body) if body
 
       Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.open_timeout = 0.5
