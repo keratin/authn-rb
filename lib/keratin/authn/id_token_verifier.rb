@@ -12,12 +12,27 @@ module Keratin::AuthN
       jwt['sub']
     end
 
+    EXPECTATIONS = [
+      :token_exists?,
+      :token_from_us?,
+      :token_for_us?,
+      :token_fresh?,
+      :token_intact?
+    ]
+
     def verified?
-      jwt.present? &&
-        token_from_us? &&
-        token_for_us? &&
-        !token_expired? &&
-        token_intact?
+      EXPECTATIONS.all? do |expectation|
+        if send(expectation)
+          true
+        else
+          Keratin::AuthN.debug{ "JWT failure: #{expectation}" }
+          false
+        end
+      end
+    end
+
+    def token_exists?
+      !jwt.nil? && !jwt.blank?
     end
 
     def token_from_us?
@@ -30,8 +45,8 @@ module Keratin::AuthN
       jwt[:aud] == Keratin::AuthN.config.audience
     end
 
-    def token_expired?
-      jwt[:exp] < @time
+    def token_fresh?
+      jwt[:exp] > @time
     end
 
     def token_intact?
