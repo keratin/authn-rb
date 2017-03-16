@@ -51,6 +51,12 @@ logout functionality there as it can also take care of deleting the cookie.
 * `Keratin.authn.archive(account_id)`: will wipe all personal information, including username and
   password. Intended for user deletion routine.
 
+### Other
+
+* `Keratin.authn.import(username: user.email, password: user.password, locked: false)`: will create
+  an account in Keratin. Intended for importing data from a legacy system. Returns an `account_id`,
+  or raises on validation errors.
+
 ### Example: Sessions
 
 You should store the token in a cookie (the [keratin/authn-js](https://github.com/keratin/authn-js)

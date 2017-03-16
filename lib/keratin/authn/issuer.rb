@@ -15,6 +15,15 @@ module Keratin::AuthN
       delete(path: "/accounts/#{account_id}").result
     end
 
+    # returns account_id or raises exception
+    def import(username:, password:, locked: false)
+      post(path: '/accounts/import', body: {
+        username: username,
+        password: password,
+        locked: locked
+      }).result['id']
+    end
+
     def signing_key(kid)
       keys.find{|k| k['use'] == 'sig' && (kid.blank? || kid == k['kid']) }
     end

@@ -27,6 +27,20 @@ class Keratin::IssuerTest < Keratin::AuthN::TestCase
     assert_requested(stub)
   end
 
+  testing '#import' do
+    test 'success' do
+      stub_request(:post, 'https://issuer.tech/accounts/import').to_return(body: '{"result":{"id":123}}')
+      assert_equal 123, subject.import(username: 'username', password: 'password')
+    end
+
+    test 'failure' do
+      stub_request(:post, 'https://issuer.tech/accounts/import').to_return(status: 422, body: '{"errors": [{"field":"username","message":"MISSING"}]}')
+      assert_raises Keratin::Error do
+        subject.import(username: 'username', password: 'password')
+      end
+    end
+  end
+
   testing '#signing_key' do
     test 'with multiple keys' do
       stub_request(:get, 'https://issuer.tech/configuration').to_return(body: {'jwks_uri' => 'https://issuer.tech/jwks'}.to_json)
