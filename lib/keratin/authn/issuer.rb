@@ -24,6 +24,10 @@ module Keratin::AuthN
       }).result['id']
     end
 
+    def expire_password(account_id)
+      patch(path: "/accounts/#{account_id}/expire_password")
+    end
+
     def signing_key(kid)
       keys.find{|k| k['use'] == 'sig' && (kid.blank? || kid == k['kid']) }
     end

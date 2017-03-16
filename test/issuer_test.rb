@@ -41,6 +41,14 @@ class Keratin::IssuerTest < Keratin::AuthN::TestCase
     end
   end
 
+  testing '#expire_password' do
+    test 'success' do
+      stub = stub_request(:patch, 'https://issuer.tech/accounts/123/expire_password').to_return(body: '{}')
+      subject.expire_password(123)
+      assert_requested(stub)
+    end
+  end
+
   testing '#signing_key' do
     test 'with multiple keys' do
       stub_request(:get, 'https://issuer.tech/configuration').to_return(body: {'jwks_uri' => 'https://issuer.tech/jwks'}.to_json)
