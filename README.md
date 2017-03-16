@@ -50,6 +50,9 @@ logout functionality there as it can also take care of deleting the cookie.
 * `Keratin.authn.unlock(account_id)`: will unlock an account, restoring normal functionality.
 * `Keratin.authn.archive(account_id)`: will wipe all personal information, including username and
   password. Intended for user deletion routine.
+* `Keratin.authn.expire_password(account_id)`: will force the account to reset their password on the
+  next login, and revoke all current sessions. Intended for use when password is deemed insecure or
+  otherwise expired.
 
 ### Other
 
