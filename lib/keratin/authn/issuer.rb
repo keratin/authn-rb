@@ -38,7 +38,9 @@ module Keratin::AuthN
 
     private def keys
       JSON::JWK::Set.new(
-        get(path: URI.parse(configuration['jwks_uri']).path).data
+        JSON.parse(
+          Net::HTTP.get(URI.parse(configuration['jwks_uri']))
+        )
       )
     end
   end
