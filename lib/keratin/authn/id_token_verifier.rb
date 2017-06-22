@@ -2,9 +2,10 @@ require 'uri'
 
 module Keratin::AuthN
   class IDTokenVerifier
-    def initialize(str, signature_verifier)
+    def initialize(str, signature_verifier, audience)
       @id_token = str
       @signature_verifier = signature_verifier
+      @audience = audience
       @time = Time.now.to_i
     end
 
@@ -42,7 +43,7 @@ module Keratin::AuthN
     end
 
     def token_for_us?
-      jwt[:aud] == Keratin::AuthN.config.audience
+      jwt[:aud] == @audience
     end
 
     def token_fresh?

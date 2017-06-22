@@ -112,6 +112,21 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
     end
   end
 
+  testing '.subject_from.audience' do
+    test 'with a matching audience' do
+      stub_auth_server
+      audience = 'another.tech'
+      jwt = JSON::JWT.new(claims.merge(aud: audience)).sign(jws_keypair.to_jwk, 'RS256')
+      assert_equal jwt['sub'], Keratin::AuthN.subject_from(jwt.to_s, audience: audience)
+    end
+
+    test 'without a matching audience' do
+      stub_auth_server
+      jwt = JSON::JWT.new(claims.merge(aud: 'first.tech')).sign(jws_keypair.to_jwk, 'RS256')
+      assert_nil Keratin::AuthN.subject_from(jwt.to_s, audience: 'second.tech')
+    end
+  end
+
   testing '.logout_url' do
     test 'with a next url' do
       assert_equal 'https://issuer.tech/sessions/logout?redirect_uri=https%3A%2F%2Fapp.tech', Keratin::AuthN.logout_url(return_to: 'https://app.tech')

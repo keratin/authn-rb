@@ -109,6 +109,25 @@ class SessionsController
 end
 ```
 
+### Example: Multiple Domains
+
+When working with multiple frontend domains it may be beneficial to use a referrer header as your audience instead of a static configuration. You can do this by providing an additional parameter to the `subject_from` method.
+
+```ruby
+class ApplicationController
+  private
+
+  def current_user
+    return @current_user if defined? @current_user
+    @current_user = User.find_by_account_id(current_account_id)
+  end
+
+  def current_account_id
+    Keratin::AuthN.subject_from(cookies[:authn], audience: URI.parse(request.referer).host)
+  end
+end
+```
+
 ## Testing Your App
 
 AuthN provides helpers for working with tokens in your application's controller and integration tests.
@@ -138,4 +157,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/keratin/authn-rb. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
