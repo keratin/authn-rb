@@ -73,8 +73,8 @@ module Keratin
     class << self
       # safely fetches a subject from the id token after checking relevant claims and
       # verifying the signature.
-      def subject_from(id_token)
-        verifier = IDTokenVerifier.new(id_token, signature_verifier)
+      def subject_from(id_token, audience: Keratin::AuthN.config.audience)
+        verifier = IDTokenVerifier.new(id_token, signature_verifier, audience)
         verifier.subject if verifier.verified?
       end
 
