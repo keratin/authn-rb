@@ -43,7 +43,7 @@ module Keratin::AuthN
     end
 
     def token_for_us?
-      jwt[:aud] == @audience
+      Array(jwt[:aud]).include? @audience
     end
 
     def token_fresh?

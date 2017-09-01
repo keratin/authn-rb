@@ -20,6 +20,12 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
       assert_equal jwt['sub'], Keratin::AuthN.subject_from(jwt.to_s)
     end
 
+    test 'with valid JWT containing audience array' do
+      stub_auth_server
+      jwt = JSON::JWT.new(claims.merge(aud: [claims[:aud]])).sign(jws_keypair.to_jwk, 'RS256')
+      assert_equal jwt['sub'], Keratin::AuthN.subject_from(jwt.to_s)
+    end
+
     test 'with invalid JWT' do
       assert_nil Keratin::AuthN.subject_from(nil)
       assert_nil Keratin::AuthN.subject_from('')
