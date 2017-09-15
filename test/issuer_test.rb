@@ -9,6 +9,20 @@ class Keratin::IssuerTest < Keratin::AuthN::TestCase
     )
   end
 
+  testing '#update' do
+    test 'success' do
+      stub = stub_request(:patch, 'https://issuer.tech/accounts/123').to_return(body: '{}')
+      subject.update(123, username: 'new')
+    end
+
+    test 'failure' do
+      stub = stub_request(:patch, 'https://issuer.tech/accounts/123').to_return(status: 422, body: '{"errors": [{"field":"username","message":"MISSING"}]}')
+      assert_raises Keratin::Error do
+        subject.update(123, username: '')
+      end
+    end
+  end
+
   test '#lock' do
     stub = stub_request(:patch, 'https://issuer.tech/accounts/123/lock').to_return(body: '{}')
     subject.lock(123)

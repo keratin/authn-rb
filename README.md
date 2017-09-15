@@ -45,6 +45,8 @@ logout functionality there as it can also take care of deleting the cookie.
 
 ### Modifying Accounts
 
+* `Keratin.authn.update(account_id, username: 'new@example.tech')`: will synchronize an email change
+  with the AuthN server.
 * `Keratin.authn.lock(account_id)`: will lock an account, revoking all sessions (when they time out)
   and disallowing any new logins. Intended for user moderation actions.
 * `Keratin.authn.unlock(account_id)`: will unlock an account, restoring normal functionality.

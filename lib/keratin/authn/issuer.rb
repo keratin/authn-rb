@@ -3,6 +3,12 @@ require 'net/http'
 
 module Keratin::AuthN
   class Issuer < Keratin::Client
+    def update(account_id, username:)
+      patch(path: "/accounts/#{account_id}", body: {
+        username: username
+      }).result
+    end
+
     def lock(account_id)
       patch(path: "/accounts/#{account_id}/lock").result
     end
