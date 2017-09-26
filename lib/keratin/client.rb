@@ -64,7 +64,8 @@ module Keratin
 
         case response = http.request(request)
         when Net::HTTPSuccess
-          return ServiceResult.new(JSON.parse(response.body))
+          body = (response.body && !response.body.empty?) ? response.body : '{}'
+          return ServiceResult.new(JSON.parse(body))
         when Net::HTTPRedirection
           return ServiceResult.new('result' => {
             'location' => response['Location']

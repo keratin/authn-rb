@@ -108,5 +108,15 @@ class Keratin::ClientTest < Keratin::AuthN::TestCase
         assert_equal 'could not connect', response.message
       end
     end
+
+    test 'no body' do
+      stub_request(:get, "#{BASE}/some/path")
+        .with(BASIC_AUTH)
+        .to_return(status: 200, body: '')
+
+      response = client.send(:get, path: '/some/path')
+      assert response.is_a?(Keratin::ServiceResult)
+      assert_nil response.result
+    end
   end
 end
