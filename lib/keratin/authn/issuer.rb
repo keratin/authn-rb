@@ -33,21 +33,5 @@ module Keratin::AuthN
     def expire_password(account_id)
       patch(path: "/accounts/#{account_id}/expire_password")
     end
-
-    def signing_key(kid)
-      keys.find{|k| k['use'] == 'sig' && (kid.blank? || kid == k['kid']) }
-    end
-
-    private def configuration
-      @configuration ||= get(path: '/configuration').data
-    end
-
-    private def keys
-      JSON::JWK::Set.new(
-        JSON.parse(
-          Net::HTTP.get(URI.parse(configuration['jwks_uri']))
-        )
-      )
-    end
   end
 end
