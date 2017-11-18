@@ -1,8 +1,8 @@
 require_relative 'authn/version'
 require_relative 'authn/engine' if defined?(Rails)
 require_relative 'authn/id_token_verifier'
-require_relative 'authn/remote_signature_verifier'
-require_relative 'authn/mock_signature_verifier'
+require_relative 'authn/fetching_keychain'
+require_relative 'authn/mock_keychain'
 require_relative 'authn/issuer'
 
 require 'lru_redux'
@@ -51,30 +51,27 @@ module Keratin
       config.logger.debug{ yield } if config.logger
     end
 
-    # The default strategy for signature verification will find the JWT's issuer, fetch the JWKs
-    # from that server, choose the correct key by id, and finally verify the JWT. The keys are
-    # then cached in memory to reduce network traffic.
-    def self.signature_verifier
-      @verifier ||= RemoteSignatureVerifier.new(
-        LruRedux::TTL::ThreadSafeCache.new(25, config.keychain_ttl)
-      )
+    # The default keychain will fetch JWKs from the configured issuer and return the correct key by
+    # id. Keys are cached in memory to reduce network traffic.
+    def self.keychain
+      @keychain ||= FetchingKeychain.new(issuer: config.issuer, ttl: config.keychain_ttl)
     end
 
-    # If the default strategy is not desired (as in host application tests), different strategies
-    # may be specified here. The strategy must define a `verify(jwt)` method.
-    def self.signature_verifier=(val)
-      unless val.respond_to?(:verify) && val.method(:verify).arity == 1
-        raise ArgumentError, 'Please ensure that your signature verifier has been instantiated and implements `def verify(jwt)`.'
+    # If the default keychain is not desired (as in host application tests), different keychain may
+    # be specified here. The keychain must define a `[](kid)` method.
+    def self.keychain=(val)
+      unless val.respond_to?(:[]) && val.method(:[]).arity == 1
+        raise ArgumentError, 'Please ensure that your keychain has been instantiated and implements `[](kid)`.'
       end
 
-      @verifier = val
+      @keychain = val
     end
 
     class << self
       # safely fetches a subject from the id token after checking relevant claims and
       # verifying the signature.
       def subject_from(id_token, audience: Keratin::AuthN.config.audience)
-        verifier = IDTokenVerifier.new(id_token, signature_verifier, audience)
+        verifier = IDTokenVerifier.new(id_token, keychain, audience)
         verifier.subject if verifier.verified?
       end
 

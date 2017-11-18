@@ -5,7 +5,7 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
   include Keratin::AuthN::Test::Helpers
 
   def setup
-    Keratin::AuthN.signature_verifier.keychain.clear
+    Keratin::AuthN.keychain.clear
     super
   end
 
@@ -72,7 +72,7 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
     end
 
     test 'with cached keys' do
-      Keratin::AuthN.signature_verifier.keychain[jws_keypair.to_jwk[:kid]] = jws_keypair.to_jwk
+      Keratin::AuthN.keychain.instance_variable_get('@cache')[jws_keypair.to_jwk['kid']] = jws_keypair.to_jwk
 
       jwt = JSON::JWT.new(claims).sign(jws_keypair.to_jwk, 'RS256')
       assert_equal jwt['sub'], Keratin::AuthN.subject_from(jwt.to_s)
@@ -81,7 +81,8 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
     test 'with expired and stale issuer keys' do
       begin
         Timecop.freeze(Time.now)
-        Keratin::AuthN.signature_verifier.keychain[Keratin::AuthN.config.issuer] = OpenSSL::PKey::RSA.new(512).to_jwk
+        old = OpenSSL::PKey::RSA.new(512).to_jwk
+        Keratin::AuthN.keychain.instance_variable_get('@cache')[old['kid']] = old
         Timecop.freeze(Time.now + Keratin::AuthN.config.keychain_ttl + 1)
 
         stub_auth_server
@@ -154,7 +155,7 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
   end
 
   private def stub_auth_server(issuer: Keratin::AuthN.config.issuer, keypair: jws_keypair)
-    Keratin::AuthN.signature_verifier.keychain.clear
+    Keratin::AuthN.keychain.clear
     stub_request(:get, "#{issuer}/configuration").to_return(
       status: 200,
       body: {'jwks_uri' => "#{issuer}/jwks"}.to_json

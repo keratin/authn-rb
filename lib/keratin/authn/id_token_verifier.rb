@@ -2,9 +2,9 @@ require 'uri'
 
 module Keratin::AuthN
   class IDTokenVerifier
-    def initialize(str, signature_verifier, audience)
+    def initialize(str, keychain, audience)
       @id_token = str
-      @signature_verifier = signature_verifier
+      @keychain = keychain
       @audience = audience
       @time = Time.now.to_i
     end
@@ -51,7 +51,9 @@ module Keratin::AuthN
     end
 
     def token_intact?
-      @signature_verifier.verify(jwt)
+      jwt.verify!(@keychain[jwt.kid])
+    rescue JSON::JWT::VerificationFailed, JSON::JWT::UnexpectedAlgorithm
+      false
     end
 
     private def jwt

@@ -1,6 +1,6 @@
 module Keratin::AuthN
-  class MockSignatureVerifier
-    def verify(_)
+  class MockKeychain
+    def [](kid)
       true
     end
   end
