@@ -1,8 +1,8 @@
 require_relative 'test_helper'
 
-class Keratin::IssuerTest < Keratin::AuthN::TestCase
+class Keratin::APITest < Keratin::AuthN::TestCase
   def subject
-    @subject ||= Keratin::AuthN::Issuer.new(
+    @subject ||= Keratin::AuthN::API.new(
       Keratin::AuthN.config.issuer,
       username: 'foo',
       password: 'bar'

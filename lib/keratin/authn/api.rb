@@ -2,7 +2,7 @@ require 'keratin/client'
 require 'net/http'
 
 module Keratin::AuthN
-  class Issuer < Keratin::Client
+  class API < Keratin::Client
     def update(account_id, username:)
       patch(path: "/accounts/#{account_id}", body: {
         username: username

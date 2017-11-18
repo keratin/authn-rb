@@ -3,14 +3,14 @@ require_relative 'authn/engine' if defined?(Rails)
 require_relative 'authn/id_token_verifier'
 require_relative 'authn/fetching_keychain'
 require_relative 'authn/mock_keychain'
-require_relative 'authn/issuer'
+require_relative 'authn/api'
 
 require 'lru_redux'
 require 'json/jwt'
 
 module Keratin
   def self.authn
-    @authn ||= AuthN::Issuer.new(
+    @authn ||= AuthN::API.new(
       AuthN.config.issuer,
       username: AuthN.config.username,
       password: AuthN.config.password
