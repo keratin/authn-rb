@@ -11,7 +11,7 @@ require 'json/jwt'
 module Keratin
   def self.authn
     @authn ||= AuthN::API.new(
-      AuthN.config.issuer,
+      AuthN.config.authn_url || AuthN.config.issuer,
       username: AuthN.config.username,
       password: AuthN.config.password
     )
@@ -26,6 +26,11 @@ module Keratin
       # the base url of the service handling authentication
       # e.g. "https://issuer.tech"
       attr_accessor :issuer
+
+      # the base url for API calls. this is useful if you've divided your network so private API
+      # requests can not be probed by public devices. it is optional, and will default to issuer.
+      # e.g. "https://authn.internal.dns"
+      attr_accessor :authn_url
 
       # how long (in seconds) to keep keys in the keychain before refreshing.
       # default: 3600
