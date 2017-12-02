@@ -9,6 +9,11 @@ class Keratin::APITest < Keratin::AuthN::TestCase
     )
   end
 
+  test '#get' do
+    stub = stub_request(:get, 'https://issuer.tech/accounts/123').to_return(body: '{"result": {"id": 123, "username": "username", "locked": false, "deleted": false}}')
+    assert_equal 'username', subject.get(123).result['username']
+  end
+
   testing '#update' do
     test 'success' do
       stub = stub_request(:patch, 'https://issuer.tech/accounts/123').to_return(body: '{}')

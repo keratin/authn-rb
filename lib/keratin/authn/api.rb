@@ -3,6 +3,10 @@ require 'net/http'
 
 module Keratin::AuthN
   class API < Keratin::Client
+    def get(account_id)
+      super(path: "/accounts/#{account_id}")
+    end
+
     def update(account_id, username:)
       patch(path: "/accounts/#{account_id}", body: {
         username: username
