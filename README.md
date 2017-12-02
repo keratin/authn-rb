@@ -29,6 +29,12 @@ Keratin::AuthN.config.tap do |config|
   # HTTP basic auth for using AuthN's private endpoints
   config.username = 'secret'
   config.password = 'secret'
+
+  # OPTIONAL: enables debugging for the JWT verification process
+  config.logger   = Rails.logger
+
+  # OPTIONAL: allows private API calls to use private network routing
+  config.authn_url = 'https://authn.internal.dns/
 end
 ```
 
