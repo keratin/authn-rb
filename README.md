@@ -23,7 +23,7 @@ Keratin::AuthN.config.tap do |config|
   # The base URL of your Keratin AuthN service
   config.issuer = 'https://authn.myapp.com'
 
-  # The domain of your application
+  # The domain of your application (no protocol)
   config.audience = 'myapp.com'
 
   # HTTP basic auth for using AuthN's private endpoints

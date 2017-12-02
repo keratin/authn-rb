@@ -19,7 +19,7 @@ module Keratin
 
   module AuthN
     class Config
-      # the domain (host) of the main application.
+      # the domain (host) of the main application. no protocol.
       # e.g. "audience.tech"
       attr_accessor :audience
 
