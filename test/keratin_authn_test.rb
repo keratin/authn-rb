@@ -134,16 +134,6 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
     end
   end
 
-  testing '.logout_url' do
-    test 'with a next url' do
-      assert_equal 'https://issuer.tech/sessions/logout?redirect_uri=https%3A%2F%2Fapp.tech', Keratin::AuthN.logout_url(return_to: 'https://app.tech')
-    end
-
-    test 'without a next url' do
-      assert_equal 'https://issuer.tech/sessions/logout', Keratin::AuthN.logout_url
-    end
-  end
-
   private def claims
     {
       iss: Keratin::AuthN.config.issuer,

@@ -74,12 +74,6 @@ module Keratin
         verifier = IDTokenVerifier.new(id_token, keychain, audience)
         verifier.subject if verifier.verified?
       end
-
-      def logout_url(return_to: nil)
-        query = {redirect_uri: return_to}.to_param if return_to
-
-        "#{config.issuer}/sessions/logout#{'?' if query}#{query}"
-      end
     end
   end
 end
