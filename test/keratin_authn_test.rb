@@ -2,8 +2,6 @@ require_relative 'test_helper'
 require 'keratin/authn/testing'
 
 class Keratin::AuthNTest < Keratin::AuthN::TestCase
-  include Keratin::AuthN::Test::Helpers
-
   def setup
     Keratin::AuthN.keychain.clear
     super
@@ -156,10 +154,15 @@ class Keratin::AuthNTest < Keratin::AuthN::TestCase
         keys: [
           keypair.public_key.to_jwk.slice(:kty, :kid, :e, :n).merge(
             use: 'sig',
-            alg: JWS_ALGORITHM
+            alg: 'RS256'
           )
         ]
       }.to_json
     )
   end
+
+  private def jws_keypair
+    @keypair ||= OpenSSL::PKey::RSA.new(512)
+  end
+
 end

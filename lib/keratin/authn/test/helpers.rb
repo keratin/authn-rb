@@ -10,14 +10,7 @@ module Keratin::AuthN::Test
         sub: subject,
         iat: 10.seconds.ago,
         exp: 1.hour.from_now
-      ).sign(jws_keypair.to_jwk, JWS_ALGORITHM).to_s
-    end
-
-    # a temporary RSA key for the test suite.
-    #
-    # generates the smallest (fastest) key possible for RS256
-    private def jws_keypair
-      @keypair ||= OpenSSL::PKey::RSA.new(512)
+      ).sign(Keratin::AuthN.keychain.key, JWS_ALGORITHM).to_s
     end
   end
 end

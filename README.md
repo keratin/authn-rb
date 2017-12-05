@@ -151,8 +151,8 @@ In your `test/test_helper.rb` or equivalent:
 
 ```ruby
 # Configuring AuthN to use the MockKeychain will stop your tests from attempting to connect to the
-# remote issuer during tests.
-Keratin::AuthN.signature_verifier = Keratin::AuthN::MockKeychain.new
+# remote issuer during tests. The MockKeychain creates a single weak key, for speedy tests.
+Keratin::AuthN.keychain = Keratin::AuthN::MockKeychain.new
 
 # Including the Test::Helpers module grants access to `id_token_for(user.account_id)`, so that you
 # can test your system with real tokens.
