@@ -20,21 +20,27 @@ Configure your integration from a file such as `config/initializers/keratin.rb`:
 
 ```ruby
 Keratin::AuthN.config.tap do |config|
-  # The base URL of your Keratin AuthN service
+  # The AUTHN_URL of your Keratin AuthN server. This will be used to verify tokens created by AuthN,
+  # and will also be used for API calls unless `config.authn_url` is also set (see below).
   config.issuer = 'https://authn.myapp.com'
 
-  # The domain of your application (no protocol)
+  # The domain of your application (no protocol). This domain should be listed in the APP_DOMAINS of
+  # your Keratin AuthN server.
   config.audience = 'myapp.com'
 
-  # HTTP basic auth for using AuthN's private endpoints
+  # Credentials for AuthN's private endpoints. These will be used to execute admin actions using the
+  # `Keratin.authn` client provided by this library.
+  #
+  # TIP: make them extra secure in production!
   config.username = 'secret'
   config.password = 'secret'
 
   # OPTIONAL: enables debugging for the JWT verification process
-  config.logger   = Rails.logger
+  # config.logger   = Rails.logger
 
-  # OPTIONAL: allows private API calls to use private network routing
-  config.authn_url = 'https://authn.internal.dns/
+  # OPTIONAL: Send private API calls to AuthN using private network routing. This can be necessary
+  # if your environment has a firewall to limit public endpoints.
+  # config.authn_url = 'https://authn.internal.dns/
 end
 ```
 
