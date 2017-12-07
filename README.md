@@ -5,7 +5,10 @@ Keratin AuthN is an authentication service that keeps you in control of the expe
 This gem provides utilities to help integrate with the backend of a Ruby application. You will also
 need a client for your frontend, such as [keratin/authn-js](https://github.com/keratin/authn-js).
 
-[![Gem Version](https://badge.fury.io/rb/keratin-authn.svg)](http://badge.fury.io/rb/keratin-authn) [![Build Status](https://travis-ci.org/keratin/authn-rb.svg?branch=master)](https://travis-ci.org/keratin/authn-rb) [![Coverage Status](https://coveralls.io/repos/github/keratin/authn/badge.svg?branch=master)](https://coveralls.io/github/keratin/authn?branch=master)
+[![Gitter](https://badges.gitter.im/keratin/authn-server.svg)](https://gitter.im/keratin/authn-server?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Gem Version](https://badge.fury.io/rb/keratin-authn.svg)](http://badge.fury.io/rb/keratin-authn)
+[![Build Status](https://travis-ci.org/keratin/authn-rb.svg?branch=master)](https://travis-ci.org/keratin/authn-rb)
+[![Coverage Status](https://coveralls.io/repos/github/keratin/authn/badge.svg?branch=master)](https://coveralls.io/github/keratin/authn?branch=master)
 
 ## Installation
 
@@ -49,12 +52,6 @@ end
 
 Use `Keratin::AuthN.subject_from(params[:authn])` to fetch an `account_id` from the session if and
 only if the session is valid.
-
-### Logging Out
-
-Send users to `Keratin::AuthN.logout_url(return_to: some_path)` to log them out from the AuthN
-server. If you use [keratin/authn-js](https://github.com/keratin/authn-js), you might prefer the
-logout functionality there as it can also take care of deleting the cookie.
 
 ### Modifying Accounts
 
