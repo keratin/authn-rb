@@ -9,9 +9,10 @@ require 'lru_redux'
 require 'json/jwt'
 
 module Keratin
+  # Client for AuthN API calls
   def self.authn
     @authn ||= AuthN::API.new(
-      AuthN.config.authn_url || AuthN.config.issuer,
+      AuthN.config.authn_url,
       username: AuthN.config.username,
       password: AuthN.config.password
     )
@@ -30,7 +31,10 @@ module Keratin
       # the base url for API calls. this is useful if you've divided your network so private API
       # requests can not be probed by public devices. it is optional, and will default to issuer.
       # e.g. "https://authn.internal.dns"
-      attr_accessor :authn_url
+      attr_writer :authn_url
+      def authn_url
+        @authn_url || issuer
+      end
 
       # how long (in seconds) to keep keys in the keychain before refreshing.
       # default: 3600
@@ -56,10 +60,10 @@ module Keratin
       config.logger.debug{ yield } if config.logger
     end
 
-    # The default keychain will fetch JWKs from the configured issuer and return the correct key by
-    # id. Keys are cached in memory to reduce network traffic.
+    # The default keychain will fetch JWKs from AuthN and return the correct key by id. Keys are
+    # cached in memory to reduce network traffic.
     def self.keychain
-      @keychain ||= FetchingKeychain.new(issuer: config.issuer, ttl: config.keychain_ttl)
+      @keychain ||= FetchingKeychain.new(issuer: config.authn_url, ttl: config.keychain_ttl)
     end
 
     # If the default keychain is not desired (as in host application tests), different keychain may
